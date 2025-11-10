@@ -1,5 +1,7 @@
 package cat.itacademy.s04.t02.n02.fruit.services;
 
+import cat.itacademy.s04.t02.n02.fruit.dto.ProviderRequestDTO;
+import cat.itacademy.s04.t02.n02.fruit.dto.ProviderResponseDTO;
 import cat.itacademy.s04.t02.n02.fruit.model.Provider;
 import cat.itacademy.s04.t02.n02.fruit.repository.ProviderRepository;
 import cat.itacademy.s04.t02.n02.fruit.validator.ProviderValidator;
@@ -17,9 +19,13 @@ public class ProviderServiceImpl implements ProviderService {
         this.providerRepository = providerRepository;
         this.providerValidator = providerValidator;
     }
+
     @Override
-    public Provider createProvider(Provider provider) {
+    public ProviderResponseDTO createProvider(ProviderRequestDTO dto) {
+        Provider provider = new Provider(dto.getName(), dto.getCountry());
         providerValidator.validate(provider);
-        return providerRepository.save(provider);
+
+        Provider saved = providerRepository.save(provider);
+        return new ProviderResponseDTO(saved.getId(), saved.getName(), saved.getCountry());
     }
 }
