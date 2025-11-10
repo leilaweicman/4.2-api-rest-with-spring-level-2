@@ -1,5 +1,7 @@
 package cat.itacademy.s04.t02.n02.fruit.services;
 
+import cat.itacademy.s04.t02.n02.fruit.dto.ProviderRequestDTO;
+import cat.itacademy.s04.t02.n02.fruit.dto.ProviderResponseDTO;
 import cat.itacademy.s04.t02.n02.fruit.exception.DuplicateProviderNameException;
 import cat.itacademy.s04.t02.n02.fruit.exception.InvalidProviderCountryException;
 import cat.itacademy.s04.t02.n02.fruit.exception.InvalidProviderNameException;
@@ -30,54 +32,57 @@ public class ProviderServiceTest {
 
     @Test
     void createProvider_shouldAddProvider_whenValidData() {
-        Provider provider = new Provider("Frutas Tropic", "Spain");
-        when(providerRepository.save(any(Provider.class))).thenReturn(provider);
+        ProviderRequestDTO dto = new ProviderRequestDTO("Frutas Tropic", "Spain");
+        Provider savedProvider = new Provider(1L, "Frutas Tropic", "Spain");
 
-        Provider result = providerService.createProvider(provider);
+        when(providerRepository.save(any(Provider.class))).thenReturn(savedProvider);
 
+        ProviderResponseDTO result = providerService.createProvider(dto);
+
+        assertNotNull(result);
         assertEquals("Frutas Tropic", result.getName());
         assertEquals("Spain", result.getCountry());
 
-        verify(providerValidator).validate(provider);
+        verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository).save(any(Provider.class));
     }
 
     @Test
     void createProvider_shouldThrowException_whenNameIsEmpty() {
-        Provider provider = new Provider("", "Spain");
+        ProviderRequestDTO dto = new ProviderRequestDTO("", "Spain");
 
         doThrow(new InvalidProviderNameException("Provider name cannot be empty."))
-                .when(providerValidator).validate(provider);
+                .when(providerValidator).validate(any(Provider.class));
 
-        assertThrows(InvalidProviderNameException.class, () -> providerService.createProvider(provider));
+        assertThrows(InvalidProviderNameException.class, () -> providerService.createProvider(dto));
 
-        verify(providerValidator).validate(provider);
+        verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository, never()).save(any());
     }
 
     @Test
     void createProvider_shouldThrowException_whenNameExists() {
-        Provider provider = new Provider("Frutas Tropic", "Spain");
+        ProviderRequestDTO dto = new ProviderRequestDTO("Frutas Tropic", "Spain");
 
         doThrow(new DuplicateProviderNameException("Provider already exists."))
-                .when(providerValidator).validate(provider);
+                .when(providerValidator).validate(any(Provider.class));
 
-        assertThrows(DuplicateProviderNameException.class, () -> providerService.createProvider(provider));
+        assertThrows(DuplicateProviderNameException.class, () -> providerService.createProvider(dto));
 
-        verify(providerValidator).validate(provider);
+        verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository, never()).save(any());
     }
 
     @Test
     void createProvider_shouldThrowException_whenCountryIsEmpty() {
-        Provider provider = new Provider("Frutas Tropic", "");
+        ProviderRequestDTO dto = new ProviderRequestDTO("Frutas Tropic", "");
 
-        doThrow(new InvalidProviderCountryException("Country cannot be empty."))
-                .when(providerValidator).validate(provider);
+        doThrow(new InvalidProviderCountryException("Provider country cannot be empty."))
+                .when(providerValidator).validate(any(Provider.class));
 
-        assertThrows(InvalidProviderCountryException.class, () -> providerService.createProvider(provider));
+        assertThrows(InvalidProviderCountryException.class, () -> providerService.createProvider(dto));
 
-        verify(providerValidator).validate(provider);
+        verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository, never()).save(any());
     }
 
