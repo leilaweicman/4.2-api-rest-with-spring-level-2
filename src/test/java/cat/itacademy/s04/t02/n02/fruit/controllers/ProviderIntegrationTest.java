@@ -38,7 +38,7 @@ public class ProviderIntegrationTest {
     void createProvider_returnsCreatedProvider() throws Exception {
         ProviderRequestDTO provider = new ProviderRequestDTO("Frutas Tropic", "Spain");
 
-        mockMvc.perform(get("/providers")
+        mockMvc.perform(post("/providers")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(provider)))
                 .andExpect(status().isCreated())
