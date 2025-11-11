@@ -22,7 +22,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public ProviderResponseDTO createProvider(ProviderRequestDTO dto) {
-        Provider provider = new Provider(dto.getName(), dto.getCountry());
+        Provider provider = new Provider(dto.name(), dto.country());
         providerValidator.validate(provider);
 
         Provider saved = providerRepository.save(provider);

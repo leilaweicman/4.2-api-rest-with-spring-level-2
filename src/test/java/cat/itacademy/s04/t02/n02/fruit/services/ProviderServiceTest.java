@@ -40,8 +40,8 @@ public class ProviderServiceTest {
         ProviderResponseDTO result = providerService.createProvider(dto);
 
         assertNotNull(result);
-        assertEquals("Frutas Tropic", result.getName());
-        assertEquals("Spain", result.getCountry());
+        assertEquals("Frutas Tropic", result.name());
+        assertEquals("Spain", result.country());
 
         verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository).save(any(Provider.class));
