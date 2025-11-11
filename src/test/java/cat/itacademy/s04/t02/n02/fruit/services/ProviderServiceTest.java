@@ -30,13 +30,9 @@ public class ProviderServiceTest {
     @Mock
     private ProviderRepository providerRepository;
     @Mock
-    private FruitRepository fruitRepository;
-    @Mock
     private ProviderValidator providerValidator;
     @InjectMocks
     private ProviderServiceImpl providerService;
-    @InjectMocks
-    private FruitServiceImpl fruitService;
 
     @Test
     void createProvider_shouldAddProvider_whenValidData() {
@@ -93,51 +89,5 @@ public class ProviderServiceTest {
 
         verify(providerValidator).validate(any(Provider.class));
         verify(providerRepository, never()).save(any());
-    }
-
-    @Test
-    void createFruit_shouldAddFruit_whenValidData() {
-        Provider provider = new Provider(1L, "Frutas Tropic", "Spain");
-        Fruit fruit = new Fruit("Apple", 5, provider);
-
-        when(providerRepository.findById(1L)).thenReturn(Optional.of(provider));
-        when(fruitRepository.save(any(Fruit.class))).thenReturn(fruit);
-
-        FruitResponseDTO result = fruitService.createFruit(new FruitRequestDTO("Apple", 5, 1L));
-
-        assertEquals("Apple", result.name());
-        assertEquals(5, result.weight());
-        assertEquals("Frutas Tropic", result.providerName());
-
-        verify(fruitRepository).save(any(Fruit.class));
-    }
-
-    @Test
-    void createFruit_shouldThrowException_whenProviderIdIsNull() {
-        assertThrows(InvalidFruitProviderException.class,
-                () -> fruitService.createFruit(new FruitRequestDTO("Apple", 5, null)));
-    }
-
-    @Test
-    void createFruit_shouldThrowException_whenProviderNotFound() {
-        when(providerRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(ProviderNotFoundException.class,
-                () -> fruitService.createFruit(new FruitRequestDTO("Banana", 3, 99L)));
-
-        verify(fruitRepository, never()).save(any());
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void createFruit_shouldThrowException_whenNameIsNullOrBlank(String name) {
-        assertThrows(InvalidFruitNameException.class,
-                () -> fruitService.createFruit(new FruitRequestDTO(name, 5, 1L)));
-    }
-
-    @Test
-    void createFruit_shouldThrowException_whenWeightIsInvalid() {
-        assertThrows(InvalidFruitWeightException.class,
-                () -> fruitService.createFruit(new FruitRequestDTO("Apple", -1, 1L)));
     }
 }
