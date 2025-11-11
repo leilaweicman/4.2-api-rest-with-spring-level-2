@@ -10,12 +10,15 @@ import cat.itacademy.s04.t02.n02.fruit.model.Fruit;
 import cat.itacademy.s04.t02.n02.fruit.model.Provider;
 import cat.itacademy.s04.t02.n02.fruit.repository.FruitRepository;
 import cat.itacademy.s04.t02.n02.fruit.repository.ProviderRepository;
-import cat.itacademy.s04.t02.n02.fruit.validator.ProviderValidator;
+import cat.itacademy.s04.t02.n02.fruit.validator.FruitValidator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -24,17 +27,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class FruitServiceTest {
 
     @Mock
     private FruitRepository fruitRepository;
     @Mock
     private ProviderRepository providerRepository;
-    @InjectMocks
+
     private FruitServiceImpl fruitService;
+
+    private final FruitValidator fruitValidator = new FruitValidator();
+    @BeforeEach
+    void setUp() {
+        fruitService = new FruitServiceImpl(fruitRepository, providerRepository, fruitValidator);
+    }
+
     @Test
     void createFruit_shouldAddFruit_whenValidData() {
-        Provider provider = new Provider(1L, "Frutas Tropic", "Spain");
+        Provider provider = new Provider("Frutas Tropic", "Spain");
+        ReflectionTestUtils.setField(provider, "id", 1L);
+
         Fruit fruit = new Fruit("Apple", 5, provider);
 
         when(providerRepository.findById(1L)).thenReturn(Optional.of(provider));
